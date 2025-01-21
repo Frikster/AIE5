@@ -1,5 +1,6 @@
 import os
 from typing import List
+from PyPDF2 import PdfReader
 
 
 class TextFileLoader:
@@ -11,25 +12,42 @@ class TextFileLoader:
     def load(self):
         if os.path.isdir(self.path):
             self.load_directory()
-        elif os.path.isfile(self.path) and self.path.endswith(".txt"):
-            self.load_file()
+        elif os.path.isfile(self.path):
+            if self.path.endswith(".txt"):
+                self.load_file()
+            elif self.path.endswith(".pdf"):
+                self.load_pdf()
         else:
             raise ValueError(
-                "Provided path is neither a valid directory nor a .txt file."
+                "Provided path is neither a valid directory nor a supported file."
             )
 
     def load_file(self):
         with open(self.path, "r", encoding=self.encoding) as f:
             self.documents.append(f.read())
 
+    def load_pdf(self):
+        reader = PdfReader(self.path)
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text() + "\n"
+        self.documents.append(text)
+
     def load_directory(self):
         for root, _, files in os.walk(self.path):
             for file in files:
-                if file.endswith(".txt"):
-                    with open(
-                        os.path.join(root, file), "r", encoding=self.encoding
-                    ) as f:
-                        self.documents.append(f.read())
+                if file.endswith((".txt", ".pdf")):
+                    if file.endswith(".txt"):
+                        with open(
+                            os.path.join(root, file), "r", encoding=self.encoding
+                        ) as f:
+                            self.documents.append(f.read())
+                    else:
+                        reader = PdfReader(os.path.join(root, file))
+                        text = ""
+                        for page in reader.pages:
+                            text += page.extract_text() + "\n"
+                        self.documents.append(text)
 
     def load_documents(self):
         self.load()
