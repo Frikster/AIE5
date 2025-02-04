@@ -33,6 +33,8 @@ The graph should employ an additional team that verifies the correctness of the 
 
 The completed notebook!
 
+https://colab.research.google.com/drive/1mIWoFOo692Ryo_kG7wi027UqyB4QQFog#scrollTo=__Jw_XBIFwwa
+
 ### Deliverables
 
 - A short Loom of the notebook, and a 1min. walkthrough of the application in full
